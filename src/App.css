@@ -1,22 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
 
-* {
-  box-sizing: border-box;
-  margin: 0; padding: 0;
-  font-family: 'Share Tech Mono', monospace;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Share Tech Mono', monospace; }
 
-/* Forzar que el body no haga scroll */
-html, body {
-  height: 100%;
-  overflow: hidden;
-  background-color: #020202;
-  color: #fff;
-}
+html, body { height: 100%; overflow: hidden; background-color: #020202; color: #fff; }
 
-/* Clases dinámicas */
+/* ── Dynamic theme vars ── */
 .dynamic-text { color: var(--primary-color); text-shadow: var(--shadow-glow); }
 
+/* ── Matrix canvas ── */
 .matrix-canvas {
   position: fixed; top: 0; left: 0;
   width: 100vw; height: 100vh;
@@ -28,128 +19,86 @@ html, body {
 
 .scanline {
   position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-  background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.2));
-  background-size: 100% 4px; pointer-events: none; z-index: 999;
+  background: linear-gradient(to bottom, transparent, transparent 50%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.2));
+  background-size: 100% 4px;
+  pointer-events: none; z-index: 999;
 }
 
-/* Contenedor principal sin scroll */
+/* ── App container ── */
 .app-container {
-  height: 100vh;
-  height: 100dvh;
+  height: 100vh; height: 100dvh;
   width: 100vw;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
   padding: 1rem;
   overflow: hidden;
   transition: filter 0.1s ease, transform 0.1s ease;
 }
 
+/* ── Animations ── */
 @keyframes fadeIn {
   from { opacity: 0; transform: scale(0.95) translateY(15px); filter: blur(5px); }
-  to { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+  to   { opacity: 1; transform: scale(1)    translateY(0);    filter: blur(0);   }
 }
-
 .fade-in { animation: fadeIn 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
 
 @keyframes flicker {
-  0% { opacity: 1; } 5% { opacity: 0.1; } 10% { opacity: 1; }
-  15% { opacity: 0.3; } 20% { opacity: 1; transform: translate(3px, -2px); }
-  25% { transform: translate(0, 0); } 100% { opacity: 1; }
+  0%  { opacity: 1; }
+  5%  { opacity: 0.1; }
+  10% { opacity: 1; }
+  15% { opacity: 0.3; }
+  20% { opacity: 1; transform: translate(3px, -2px); }
+  25% { transform: translate(0, 0); }
+  100%{ opacity: 1; }
 }
 
 @keyframes rgb-split {
-  0% { text-shadow: 4px 0 red, -4px 0 blue; }
-  5% { text-shadow: -4px 0 red, 4px 0 blue; }
-  10% { text-shadow: none; }
+  0%   { text-shadow: 4px 0 red, -4px 0 blue; }
+  5%   { text-shadow: -4px 0 red, 4px 0 blue; }
+  10%  { text-shadow: none; }
   100% { text-shadow: none; }
 }
 
-/* FIX: animación blink para el timer del juego (clase usada pero nunca definida) */
 @keyframes blinkAnim {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.2; }
+  50%       { opacity: 0.2; }
 }
-
 .blink { animation: blinkAnim 1s step-end infinite; }
 
-.glitch-light { animation: rgb-split 4s infinite; }
-.glitch-heavy { animation: rgb-split 2s infinite, flicker 4s infinite; }
+/* FIX: flash message animation */
+@keyframes flashIn {
+  0%   { opacity: 0; transform: translateY(-8px) scale(0.9); }
+  20%  { opacity: 1; transform: translateY(0)    scale(1.05); }
+  80%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.glitch-light   { animation: rgb-split 4s infinite; }
+.glitch-heavy   { animation: rgb-split 2s infinite, flicker 4s infinite; }
 .glitch-extreme { animation: rgb-split 0.2s infinite, flicker 0.8s infinite; filter: contrast(150%) hue-rotate(-5deg); }
 
-/* --- UI VOLUMEN REDISEÑADA --- */
-.volume-container {
-  position: absolute;
-  top: 1rem;
-  right: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  padding: 0.4rem 0.8rem;
-  z-index: 50;
-  border-radius: 2px;
-}
-
-.volume-container label {
-  font-size: 0.9rem;
-  margin-bottom: 0.3rem;
-  font-weight: bold;
-  letter-spacing: 1px;
-  color: var(--primary-color);
-}
-
-.volume-slider {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 100px;
-  height: 4px;
-  background: rgba(0,0,0,0.8);
-  border: 1px solid var(--border-color);
-  outline: none;
-  cursor: pointer;
-}
-
-.volume-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 10px;
-  height: 15px;
-  background: var(--primary-color);
-  cursor: pointer;
-  box-shadow: var(--shadow-glow);
-}
-
+/* ── Terminal box ── */
 .terminal-box {
-  background-color: rgba(5, 5, 5, 0.9);
+  background-color: rgba(5,5,5,0.9);
   border: 1px solid var(--border-color);
   box-shadow: 0 0 15px rgba(0,0,0,0.8);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
+/* ── Buttons ── */
 .btn {
-  padding: 1rem 1.5rem; border-radius: 0; font-weight: bold; font-size: 1.1rem;
+  padding: 1rem 1.5rem; border-radius: 0;
+  font-weight: bold; font-size: 1.1rem;
   background-color: rgba(0,0,0,0.8);
-  color: var(--primary-color); border: 1px solid var(--primary-color);
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
   cursor: pointer; transition: all 0.2s; text-transform: uppercase;
 }
-.btn:hover:not(:disabled) {
-  background-color: var(--primary-color); color: #000; box-shadow: var(--shadow-glow);
-}
-.btn:disabled { opacity: 0.3; cursor: not-allowed; border-color: #333; color: #333;}
-
-/* FIX: btn-success usado en el menú pero no definido — color cian para diferenciar del primario */
-.btn-success {
-  color: #00ffcc;
-  border-color: #00ffcc;
-}
-.btn-success:hover:not(:disabled) {
-  background-color: #00ffcc;
-  color: #000;
-  box-shadow: 0 0 20px rgba(0, 255, 204, 0.6);
-}
+.btn:hover:not(:disabled) { background-color: var(--primary-color); color: #000; box-shadow: var(--shadow-glow); }
+.btn:disabled { opacity: 0.3; cursor: not-allowed; border-color: #333; color: #333; }
 
 .btn-text-danger-strong {
-  background: none; border: 1px solid #ff0000; color: #ff0000 !important; 
+  background: none; border: 1px solid #ff0000; color: #ff0000 !important;
   font-weight: bold; cursor: pointer; padding: 0.5rem 1.5rem; font-size: 1.2rem;
   box-shadow: 0 0 10px rgba(255,0,0,0.3); transition: all 0.2s;
 }
@@ -157,157 +106,184 @@ html, body {
 
 .btn-exit-game {
   position: absolute; top: -3.5rem; right: 0;
-  background: rgba(0,0,0,0.8); border: 1px solid var(--border-color); color: var(--primary-color);
-  padding: 0.4rem 0.8rem; cursor: pointer; transition: 0.2s; z-index: 50; font-weight: bold;
+  background: rgba(0,0,0,0.8); border: 1px solid var(--border-color);
+  color: var(--primary-color); padding: 0.4rem 0.8rem;
+  cursor: pointer; transition: 0.2s; z-index: 50; font-weight: bold;
 }
+.btn-exit-game:hover { background: var(--primary-color); color: #000; }
 
-.mobile-controls {
-  display: none;
-  justify-content: center;
-  gap: 1.5rem;
-  margin-top: 0.5rem;
-  width: 100%;
+/* ── Volume ── */
+.volume-container {
+  position: absolute; top: 1rem; right: 1.5rem;
+  display: flex; flex-direction: column; align-items: flex-end;
+  padding: 0.4rem 0.8rem; z-index: 50; border-radius: 2px;
 }
+.volume-container label { font-size: 0.9rem; margin-bottom: 0.3rem; font-weight: bold; letter-spacing: 1px; color: var(--primary-color); }
+.volume-slider { -webkit-appearance: none; appearance: none; width: 100px; height: 4px; background: rgba(0,0,0,0.8); border: 1px solid var(--border-color); outline: none; cursor: pointer; }
+.volume-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 10px; height: 15px; background: var(--primary-color); cursor: pointer; box-shadow: var(--shadow-glow); }
 
+/* ── Mobile controls ── */
+.mobile-controls { display: none; justify-content: center; gap: 1.5rem; margin-top: 0.5rem; width: 100%; }
 .mobile-btn {
-  background-color: rgba(0, 0, 0, 0.8);
-  color: var(--primary-color);
-  border: 2px solid var(--border-color);
-  font-size: 2rem;
-  width: 4rem; height: 4rem;
-  display: flex; align-items: center; justify-content: center;
-  touch-action: manipulation;
-  user-select: none;
+  background-color: rgba(0,0,0,0.8); color: var(--primary-color);
+  border: 2px solid var(--border-color); font-size: 2rem;
+  width: 4rem; height: 4rem; display: flex; align-items: center; justify-content: center;
+  touch-action: manipulation; user-select: none; cursor: pointer;
 }
+.mobile-btn:active { background-color: var(--primary-color); color: #000; transform: scale(0.95); }
 
-.mobile-btn:active {
-  background-color: var(--primary-color);
-  color: #000;
-  transform: scale(0.95);
-}
-
-/* --- MENÚ Y PRESENTACIÓN --- */
+/* ── Menu ── */
 .menu-screen { text-align: center; padding: 2rem; max-width: 50rem; width: 90%; }
-.title { font-size: 3rem; color: var(--primary-color); text-shadow: var(--shadow-glow); margin-bottom: 0.5rem;}
+.title    { font-size: 3rem; color: var(--primary-color); text-shadow: var(--shadow-glow); margin-bottom: 0.5rem; }
 .subtitle { font-size: 1.1rem; color: #888; margin-bottom: 2rem; }
 .button-group { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
 
+/* ── Presentation ── */
 .presentation-container { max-width: 55rem; width: 100%; padding: 1.5rem; }
-.slide-header { display: flex; justify-content: space-between; border-bottom: 1px solid #333; padding-bottom: 0.5rem; margin-bottom: 1rem;}
-.slide-title { font-size: 1.6rem; color: var(--primary-color); }
+.slide-header { display: flex; justify-content: space-between; border-bottom: 1px solid #333; padding-bottom: 0.5rem; margin-bottom: 1rem; }
+.slide-title   { font-size: 1.6rem; color: var(--primary-color); }
 .slide-indicator { font-size: 1rem; color: #555; }
-
-.slide-body { 
-  height: 60vh;
-  display: flex; 
-  flex-direction: column; 
-  gap: 1rem; 
-  overflow-y: auto;
-}
-.slide-content { font-size: 1.1rem; line-height: 1.4; color: #ddd; } 
-
-/* --- CRÉDITOS (ESTILOS ARREGLADOS) --- */
-.credits-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1.2rem;
-  margin-top: 1rem;
-}
-
-.credit-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px dashed #333;
-  padding-bottom: 0.5rem;
-  font-size: 1.3rem;
-}
-
-.credit-name {
-  color: #d1d5db;
-  font-weight: bold;
-}
-
-.credit-dni {
-  color: var(--primary-color);
-  text-shadow: var(--shadow-glow);
-  white-space: nowrap;
-}
-
-/* --- ARTE ASCII --- */
+.slide-body { height: 60vh; display: flex; flex-direction: column; gap: 1rem; overflow-y: auto; }
+.slide-content { font-size: 1.1rem; line-height: 1.4; color: #ddd; }
 .ascii-art {
-  background-color: rgba(0, 10, 0, 0.6);
-  color: var(--primary-color);
-  padding: 0.8rem;
-  font-size: 0.85rem;
-  line-height: 1.1;
-  white-space: pre-wrap;
-  border-left: 4px solid var(--primary-color);
-  margin: 0.5rem 0;
+  background-color: rgba(0,10,0,0.6); color: var(--primary-color);
+  padding: 0.8rem; font-size: 0.85rem; line-height: 1.1;
+  white-space: pre-wrap; border-left: 4px solid var(--primary-color); margin: 0.5rem 0;
 }
-
 .terminal-text::before { content: "> "; color: var(--primary-color); }
 .presentation-controls { display: flex; justify-content: space-between; margin-top: 1.5rem; align-items: center; }
 
-/* --- JUEGO --- */
-.game-layout { width: 100%; max-width: 70rem; display: flex; gap: 1rem; }
-.game-board { flex: 2; display: flex; flex-direction: column; position: relative; height: 600px; padding: 1rem;}
-.game-header { display: flex; justify-content: space-between; font-size: 1.2rem; margin-bottom: 0.8rem; border-bottom: 1px dashed var(--border-color); padding-bottom: 0.4rem;}
+/* ── Credits ── */
+.credits-list { display: flex; flex-direction: column; gap: 1.2rem; margin-top: 1rem; }
+.credit-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #333; padding-bottom: 0.5rem; font-size: 1.3rem; }
+.credit-name { color: #d1d5db; font-weight: bold; }
+.credit-dni  { color: var(--primary-color); text-shadow: var(--shadow-glow); white-space: nowrap; }
 
-.falling-area { flex: 1; background-color: rgba(0,0,0,0.5); position: relative; border: 1px solid var(--border-color); border-bottom: none; }
-.falling-bit { position: absolute; width: 25%; display: flex; justify-content: center; transition: left 0.1s linear, top 0.05s linear;}
-.bit-box { width: 3.2rem; height: 3.2rem; background-color: rgba(0,0,0,0.8); border: 2px solid var(--primary-color); color: var(--primary-color); display: flex; align-items: center; justify-content: center; font-size: 1.6rem; font-weight: bold; }
+/* ── Game layout ── */
+.game-layout { width: 100%; max-width: 72rem; display: flex; gap: 1rem; position: relative; }
 
-.receptors-area { height: 5.5rem; display: flex; background-color: rgba(0,0,0,0.8); border: 1px solid var(--border-color); }
-.receptor-col { width: 25%; border-right: 1px solid #222; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 0.4rem; position: relative; }
-.receptor-col:last-child { border-right: none; }
-.peso-label { position: absolute; top: 0.2rem; color: #666; font-size: 0.8rem; }
-.receptor-box { width: 3rem; height: 3rem; border: 1px dashed var(--border-color); display: flex; align-items: center; justify-content: center; font-size: 1.6rem; }
+/* ── Game board ── */
+.game-board {
+  flex: 2; display: flex; flex-direction: column;
+  position: relative; height: 600px; padding: 1rem;
+}
 
-/* FIX: filled-bit y empty-bit usados en el receptor pero sin estilos definidos */
-.filled-bit {
-  color: var(--primary-color);
-  font-weight: bold;
-  font-size: 1.6rem;
+.game-header {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 1.1rem; margin-bottom: 0.8rem;
+  border-bottom: 1px dashed var(--border-color); padding-bottom: 0.4rem;
+  gap: 0.5rem;
+}
+
+/* Live board value in the header */
+.board-live-val {
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+  opacity: 0.85;
+}
+
+/* Flash message when a number is decoded */
+.flash-msg {
+  position: absolute;
+  top: 3.5rem; left: 50%; transform: translateX(-50%);
+  font-size: 1.1rem; font-weight: bold; letter-spacing: 2px;
+  animation: flashIn 0.9s ease forwards;
+  pointer-events: none; z-index: 30; white-space: nowrap;
   text-shadow: var(--shadow-glow);
 }
-.empty-bit {
-  color: #333;
-  font-size: 1.6rem;
+
+/* ── Falling area ── */
+.falling-area {
+  flex: 1;
+  background-color: rgba(0,0,0,0.5);
+  position: relative;
+  border: 1px solid var(--border-color);
+  border-bottom: none;
 }
 
-/* FIX: win-text y lose-text usados en game-over pero sin estilos definidos */
-.win-text {
-  color: #00ff88;
-  font-size: 1.6rem;
-  text-align: center;
-  text-shadow: 0 0 20px rgba(0, 255, 136, 0.8);
-  letter-spacing: 2px;
-}
-.lose-text {
-  color: #ff2222;
-  font-size: 1.6rem;
-  text-align: center;
-  text-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
-  letter-spacing: 2px;
+/* FIX: transition only on left (horizontal move); top is handled by physics ticker */
+.falling-bit {
+  position: absolute; width: 25%;
+  display: flex; justify-content: center;
+  transition: left 0.08s linear;
 }
 
-.side-panel { flex: 1; display: flex; flex-direction: column; gap: 1rem; }
-.array-card { padding: 0.8rem; flex: 1; }
-.array-title { font-size: 1rem; margin-bottom: 0.6rem; border-bottom: 1px solid #333; padding-bottom: 0.3rem; color: var(--primary-color); }
-.array-grid { display: flex; flex-wrap: wrap; gap: 0.4rem; }
-.array-item { width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; font-size: 1rem; font-weight: bold;}
-.item-target { background: rgba(50,0,0,0.5); border: 1px solid #aa0000; color: #ff5555; }
-.item-completed { background: rgba(0,50,0,0.5); border: 1px solid #00aa00; color: #55ff55; }
+.bit-box {
+  width: 3.2rem; height: 3.2rem;
+  background-color: rgba(0,0,0,0.8);
+  border: 2px solid var(--primary-color);
+  color: var(--primary-color);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.6rem; font-weight: bold;
+  box-shadow: var(--shadow-glow);
+}
 
+/* ── Receptors ── */
+.receptors-area {
+  height: 5.5rem; display: flex;
+  background-color: rgba(0,0,0,0.8);
+  border: 1px solid var(--border-color);
+}
+.receptor-col {
+  width: 25%; border-right: 1px solid #222;
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+  padding-bottom: 0.4rem; position: relative;
+}
+.receptor-col:last-child { border-right: none; }
+.peso-label { position: absolute; top: 0.2rem; color: #666; font-size: 0.8rem; }
+.receptor-box {
+  width: 3rem; height: 3rem;
+  border: 1px dashed var(--border-color);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.6rem;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+/* NEW: glow when a bit has landed */
+.receptor-filled {
+  border-style: solid;
+  border-color: var(--primary-color);
+  box-shadow: var(--shadow-glow);
+}
+
+.filled-bit { color: var(--primary-color); font-weight: bold; font-size: 1.6rem; text-shadow: var(--shadow-glow); }
+.empty-bit  { color: #333; font-size: 1.6rem; }
+
+/* ── Game over overlay ── */
 .game-over-screen {
   position: absolute; inset: 0; background: rgba(0,0,0,0.95);
-  display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 20; border: 2px solid var(--primary-color);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  z-index: 20; border: 2px solid var(--primary-color);
 }
+.win-text  { color: #00ff88; font-size: 1.6rem; text-align: center; text-shadow: 0 0 20px rgba(0,255,136,0.8); letter-spacing: 2px; }
+.lose-text { color: #ff2222; font-size: 1.6rem; text-align: center; text-shadow: 0 0 20px rgba(255,0,0,0.8);   letter-spacing: 2px; }
 
+/* ── Side panel ── */
+.side-panel { flex: 1; display: flex; flex-direction: column; gap: 0.8rem; }
+.array-card { padding: 0.8rem; flex: 1; overflow: hidden; }
+.array-title { font-size: 0.95rem; margin-bottom: 0.6rem; border-bottom: 1px solid #333; padding-bottom: 0.3rem; color: var(--primary-color); }
+.array-grid { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.array-item {
+  width: 2.5rem; height: 2.5rem;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem; font-weight: bold;
+  cursor: default;
+}
+.item-target    { background: rgba(50,0,0,0.5); border: 1px solid #aa0000; color: #ff5555; }
+.item-completed { background: rgba(0,50,0,0.5); border: 1px solid #00aa00; color: #55ff55; }
+
+/* Controls hint box */
+.controls-hint {
+  padding: 0.6rem 0.8rem;
+  font-size: 0.75rem;
+  color: #444;
+  line-height: 1.8;
+}
+.controls-hint p::before { content: "> "; color: #333; }
+
+/* ── KaTeX ── */
 .katex { margin: 0 4px; }
 
-/* Utilidades básicas */
+/* ── Utilities ── */
 .mb-2 { margin-bottom: 0.5rem; }
 .mb-4 { margin-bottom: 1rem; }
 .mb-6 { margin-bottom: 1.5rem; }
@@ -315,54 +291,49 @@ html, body {
 .mt-2 { margin-top: 0.5rem; }
 .mt-6 { margin-top: 1.5rem; }
 .mt-8 { margin-top: 2rem; }
-.pb-2 { margin-bottom: 0.5rem; }
-.p-4 { padding: 1rem; }
+.pb-2 { padding-bottom: 0.5rem; }
+.p-4  { padding: 1rem; }
 .flex { display: flex; }
 .justify-center { justify-content: center; }
 
-/* --- RESPONSIVE DESIGN --- */
+/* ── Responsive ── */
 @media (max-width: 900px) {
   .game-layout { flex-direction: column; }
-  .game-board { height: 450px; }
-  .side-panel { flex-direction: row; }
+  .game-board  { height: 450px; }
+  .side-panel  { flex-direction: row; }
+  .controls-hint { display: none; }
 }
 
 @media (max-width: 600px) {
   .app-container { padding: 0.5rem; }
-  .title { font-size: 1.8rem; }
+  .title    { font-size: 1.8rem; }
   .subtitle { font-size: 0.9rem; margin-bottom: 1.5rem; }
-  
-  /* CRÉDITOS EN MÓVIL: En columna para que no se peguen */
-  .credit-item {
-    flex-direction: column;
-    align-items: flex-start;
-    font-size: 1.1rem;
-    gap: 0.2rem;
-  }
-  .credit-dni { font-size: 0.95rem; }
-  
+
+  .credit-item { flex-direction: column; align-items: flex-start; font-size: 1.1rem; gap: 0.2rem; }
+  .credit-dni  { font-size: 0.95rem; }
+
   .game-layout { margin-top: 3.5rem; }
-  .game-board { height: 50vh; height: 50dvh; min-height: 320px; padding: 0.5rem; }
-  .falling-area { flex: 1; }
+  .game-board  { height: 50vh; height: 50dvh; min-height: 320px; padding: 0.5rem; }
 
   .bit-box, .receptor-box { width: 2.2rem; height: 2.2rem; font-size: 1.2rem; }
   .receptors-area { height: 4.5rem; }
   .receptor-col { padding-bottom: 0.2rem; }
-  
+
   .mobile-controls { display: flex; gap: 1rem; }
   .mobile-btn { width: 3.2rem; height: 3.2rem; font-size: 1.5rem; border-radius: 4px; }
 
   .side-panel { flex-direction: column; gap: 0.4rem; height: auto; }
   .array-card { padding: 0.6rem; }
   .array-item { width: 1.8rem; height: 1.8rem; font-size: 0.8rem; }
-  
+
+  .board-live-val { display: none; } /* too cramped on tiny screens */
+
   .volume-container {
     top: auto; bottom: 0.5rem; left: 0.5rem; right: auto;
-    flex-direction: row; align-items: center; gap: 0.5rem;
-    padding: 0.2rem 0.5rem;
+    flex-direction: row; align-items: center; gap: 0.5rem; padding: 0.2rem 0.5rem;
   }
   .volume-slider { width: 70px; }
   .volume-container label { font-size: 0.7rem; margin-bottom: 0; }
-  
+
   .btn-exit-game { top: -3rem; font-size: 0.75rem; }
 }
